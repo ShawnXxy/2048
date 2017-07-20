@@ -16,11 +16,11 @@ function newgame() {
  * ===============
  */
 var board = new Array();
+var hasConflicted = new Array();
+var score;
 function init() {
     for (var i = 0; i < 4; i++) { // for rows
-        board[i] = new Array();
         for (var j = 0; j < 4; j++) { // for columns
-            board[i][j] = 0; // initializing each cell to 0
             var gridCell = $("#grid-cell-" + i + "-" + j);
             // set margin-top for each cell
             gridCell.css("top", getPosTop(i, j));
@@ -28,7 +28,18 @@ function init() {
             gridCell.css("left", getPosLeft(i, j));
         }
     }
+    for (var i = 0; i < 4; i++) { // for rows
+        board[i] = new Array();
+        hasConflicted[i] = new Array();
+        for (var j = 0; j < 4; j++) { // for columns
+            board[i][j] = 0; // initializing each cell to 0
+            hasConflicted[i][j] = false;
+        }
+    }
     updateBoardView();
+    // reset score
+    score = 0;
+    $("#score").text(score);
 }
 // game cell
 var numberCell;
@@ -52,6 +63,7 @@ function updateBoardView() {
                 numberCell.css("color", getNumberColor(board[i][j]));
                 numberCell.text(board[i][j]);
             }
+            hasConflicted[i][j] = false;
         }
     }
     $(".number-cell").css("line-height", "100px");
@@ -63,7 +75,7 @@ function updateBoardView() {
  * 
  *  score updates only when numbers added up
  */
-var score = 0;
+score = 0;
 function showScore(score) {
     $("#score").text(score);
 }
@@ -76,6 +88,9 @@ function showScore(score) {
  */
 var randomNum; // used to store generated number
 function generateOneNumber() {
+    if(noSpace(board)) {
+        return false;
+    }
     // 1, generate random cell
     var randomx = parseInt(Math.floor(Math.random() * 4));
     var randomy = parseInt(Math.floor(Math.random() * 4));
@@ -95,6 +110,8 @@ function generateOneNumber() {
     // 3, display random number at random cell
     board[randomx][randomy] = randomNum;
     showNumber(randomx, randomy, randomNum);
+
+    return true;
 }
 function showNumber(i, j, num) {
     numberCell = $("#number-cell-" + i + "-" + j); 
@@ -151,6 +168,8 @@ $(document).keydown(function(e) {
                 isOver();
             }
             break;
+        default:
+            break;
     }
 });
 function moveLeft() {
@@ -170,9 +189,11 @@ function moveLeft() {
                         moveAnimation(i, j, i, k); // show animation effect
                         board[i][k] = board[i][j];
                         board[i][j] = 0; // change moving cell value to 0;
+
+                        continue;
                     }
                     // if target cell value equals to moving cell value and neighbored cells are 0
-                    else if (board[i][k] == board[i][j] && noBlockCol(i, j, k, board)){
+                    else if (board[i][k] == board[i][j] && noBlockCol(i, j, k, board) && !hasConflicted[i][k]){
                         moveAnimation(i, j, i, k); // show animation effect
                         // update target value to sum and change current moving cell to 0
                         board[i][k] = board[i][k] + board[i][j];
@@ -180,6 +201,9 @@ function moveLeft() {
                         // score update
                         score += board[i][k];
                         showScore(score);
+
+                        hasConflicted[i][k] = true;
+                        continue;
                     }
                 }
             }
@@ -205,9 +229,11 @@ function moveRight() {
                         moveAnimation(i, j, i, k); // show animation effect
                         board[i][k] = board[i][j];
                         board[i][j] = 0; // change moving cell value to 0;
+
+                        continue;
                     }
                     // if target cell value equals to moving cell value and neighbored cells are 0
-                    else if (board[i][k] == board[i][j] && noBlockCol(i, j, k, board)){
+                    else if (board[i][k] == board[i][j] && noBlockCol(i, j, k, board) && !hasConflicted[i][k]){
                         moveAnimation(i, j, i, k); // show animation effect
                         // update target value to sum and change current moving cell to 0
                         board[i][k] = board[i][k] + board[i][j];
@@ -215,6 +241,9 @@ function moveRight() {
                         // score update
                         score += board[i][k];
                         showScore(score);
+
+                        hasConflicted[i][k] = true;
+                        continue;
                     }
                 }
             }
@@ -240,9 +269,11 @@ function moveUp() {
                         moveAnimation(i, j, k, j); // show animation effect
                         board[k][j] = board[i][j];
                         board[i][j] = 0; // change moving cell value to 0;
+
+                        continue;
                     }
                     // if target cell value equals to moving cell value and neighbored cells are 0
-                    else if (board[k][j] == board[i][j] && noBlockRow(i, j, k, board)){
+                    else if (board[k][j] == board[i][j] && noBlockRow(i, j, k, board) && !hasConflicted[k][j]){
                         moveAnimation(i, j, k, j); // show animation effect
                         // update target value to sum and change current moving cell to 0
                         board[k][j] = board[k][j] + board[i][j];
@@ -250,6 +281,9 @@ function moveUp() {
                         // score update
                         score += board[k][j];
                         showScore(score);
+
+                        hasConflicted[k][j] = true;
+                        continue;
                     }
                 }
             }
@@ -275,9 +309,11 @@ function moveDown() {
                         moveAnimation(i, j, k, j); // show animation effect
                         board[k][j] = board[i][j];
                         board[i][j] = 0; // change moving cell value to 0;
+
+                        continue;
                     }
                     // if target cell value equals to moving cell value and neighbored cells are 0
-                    else if (board[k][j] == board[i][j] && noBlockRow(i, j, k, board)){
+                    else if (board[k][j] == board[i][j] && noBlockRow(i, j, k, board) && !hasConflicted[k][j]){
                         moveAnimation(i, j, k, j); // show animation effect
                         // update target value to sum and change current moving cell to 0
                         board[k][j] = board[k][j] + board[i][j];
@@ -285,6 +321,9 @@ function moveDown() {
                         // score update
                         score += board[k][j];
                         showScore(score);
+
+                        hasConflicted[k][j] = true;
+                        continue;
                     }
                 }
             }
@@ -332,7 +371,7 @@ function canMoveLeft(board) {
 }
 function canMoveRight(board) {
     for (var i = 0; i < 4; i++) {
-        for (var j = 2; j > i; j--) {
+        for (var j = 2; j >= 0; j--) {
             if (board[i][j] != 0) {
                 if (board[i][j + 1] == 0 || board[i][j + 1] == board[i][j]) {
                     return true;
@@ -356,9 +395,9 @@ function canMoveUp(board) {
 }
 function canMoveDown(board) {
     for (var i = 2; i >= 0; i--) {
-        for (var j = 1; j < 4; j++) {
+        for (var j = 0; j < 4; j++) {
             if (board[i][j] != 0) {
-                if (board[i + 1][j] == 0 || board[ + 1][j] == board[i][j]) {
+                if (board[i + 1][j] == 0 || board[i + 1][j] == board[i][j]) {
                     return true;
                 }
             }
@@ -369,8 +408,34 @@ function canMoveDown(board) {
 
 /**
  *  GAME OVER
+ * 
+ *  when all cells are not zero and neighbored are not same
  */
-
+function isOver() {
+    if (noSpace(board) && noMove(board)) {
+        $("#grid-container").append("<div id='gameover' class='gameover'><p>Score</p><span>" + score + "</span><button onclick='newgame()' id='newgamebutton'>Restart</button></div>");
+        var gameOver = $("#gameover");
+        gameOver.css("width", "500px");
+        gameOver.css("height", "500px");
+        gameOver.css("background-color", "rgba(0, 0, 0, 0.5)");
+    }
+}
+function noSpace() {
+    for (var i = 0; i < 4; i++) {
+        for (var j = 0; j < 4; j++) {
+            if (board[i][j] == 0) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+function noMove() {
+    if (canMoveDown(board) || canMoveLeft(board) || canMoveRight(board) || canMoveUp(board)) {
+        return false;
+    }
+    return true;
+}
 
 /** 
  * ==============
