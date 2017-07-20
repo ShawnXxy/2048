@@ -8,12 +8,15 @@
     <!--style-->
     <link rel="stylesheet" type="text/css" href="2048.css">
     <!--jQuery-->
-    <script type="text/javascript" src="script/jquery-3.2.1.min.js"></script>
-
-    <script type="text/javascript" src="script/support.js"></script>
-    <script type="text/javascript" src="script/animation.js"></script>
-    <script type="text/javascript" src="script/main.js"></script>
-    <script type="text/javascript" src="script/game.js"></script>
+    <script type="text/javascript" src="scripts/jquery-3.2.1.min.js"></script>
+    <!-- basic logic -->
+    <script type="text/javascript" src="scripts/support.js"></script>
+    <!-- animation effect -->
+    <script type="text/javascript" src="scripts/animation.js"></script>
+    <!-- main logic -->
+    <script type="text/javascript" src="scripts/main.js"></script>
+    <!-- game logic -->
+    <script type="text/javascript" src="scripts/game.js"></script>
 
 </head>
 <body>
@@ -21,7 +24,6 @@
         <h1>2048</h1>
         <button onclick="newgame()" id="newgamebutton">New Game</button>
         <p>score: <span id="score">0</span></p>
-
     </header>
     <div id="grid-container">
         <div class="grid-cell" id="grid-cell-0-0"></div>
