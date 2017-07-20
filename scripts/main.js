@@ -101,8 +101,14 @@ function showNumber(i, j, num) {
 
 /**
  *  ===============
- *  Game Running
+ *  Game Play Logic
  *  ===============
+ * 
+ *  current cell is movable
+ *  1, if target cell is 0 and current cell's neighbour is 0
+ *          update target value to current cell's value and change current value to 0
+ *  2, if target cell value is as same as current cell value
+ *          change target cell's value to sum(cur, target) and change current value to 0
  */
 // when a key is pressed
 $(document).keydown(function(e) {
@@ -110,21 +116,234 @@ $(document).keydown(function(e) {
         // left
         case 37: 
             if (moveLeft()) {
-                
+                generateOneNumber();
+                isOver();
             }
             break;
         // up
         case 38:
+            if (moveUp()) {
+                generateOneNumber();
+                isOver();
+            }
             break;
         // right
         case 39:
+            if (moveRight()) {
+                generateOneNumber();
+                isOver();
+            }
             break;
         // down
         case 40:
+            if (moveDown()) {
+                generateOneNumber();
+                isOver();
+            }
             break;
     }
 });
-
+function moveLeft() {
+    if (!canMoveLeft(board)) {
+        return false;
+    }
+    //row
+    for (var i = 0; i < 4; i++) {
+       // col
+        for (var j = 1; j < 4; j++) { // column starts from 1 because 0 is the most left 
+            if (board[i][j] != 0) { // current cell has value
+                // new col
+                for (var k = 0; k < j; k++) { 
+                    // if target cell is 0 and neighbored cells are 0 too
+                    if (board[i][k] == 0 && noBlockCol(i, j, k, board)) {
+                        // update target cell value to moving cell value
+                        moveAnimation(i, j, i, k); // show animation effect
+                        board[i][k] = board[i][j];
+                        board[i][j] = 0; // change moving cell value to 0;
+                    }
+                    // if target cell value equals to moving cell value and neighbored cells are 0
+                    else if (board[i][k] == board[i][j] && noBlockCol(i, j, k, board)){
+                        moveAnimation(i, j, i, k); // show animation effect
+                        // update target value to sum and change current moving cell to 0
+                        board[i][k] = board[i][k] + board[i][j];
+                        board[i][j] = 0;
+                    }
+                }
+            }
+        }
+    }
+    updateBoardView();
+    return true;
+}
+function moveRight() {
+    if (!canMoveRight(board)) {
+        return false;
+    }
+    //row
+    for (var i = 0; i < 4; i++) {
+       // col
+        for (var j = 2; j >= 0; j--) { // column starts from 1 because 0 is the most left 
+            if (board[i][j] != 0) { // current cell has value
+                // new col
+                for (var k = 3; k > j; k--) { 
+                    // if target cell is 0 and neighbored cells are 0 too
+                    if (board[i][k] == 0 && noBlockCol(i, j, k, board)) {
+                        // update target cell value to moving cell value
+                        moveAnimation(i, j, i, k); // show animation effect
+                        board[i][k] = board[i][j];
+                        board[i][j] = 0; // change moving cell value to 0;
+                    }
+                    // if target cell value equals to moving cell value and neighbored cells are 0
+                    else if (board[i][k] == board[i][j] && noBlockCol(i, j, k, board)){
+                        moveAnimation(i, j, i, k); // show animation effect
+                        // update target value to sum and change current moving cell to 0
+                        board[i][k] = board[i][k] + board[i][j];
+                        board[i][j] = 0;
+                    }
+                }
+            }
+        }
+    }
+    updateBoardView();
+    return true;
+}
+function moveUp() {
+    if (!canMoveUp(board)) {
+        return false;
+    }
+    // row
+    for (var i = 1; i < 4; i++) { // row starts from 1 because 0 is the most top 
+        // col
+        for (var j = 0; j < 4; j++) { 
+            if (board[i][j] != 0) { // current cell has value
+                // new row
+                for (var k = 0; k < i; k++) { 
+                    // if target cell is 0 and neighbored cells are 0 too
+                    if (board[k][j] == 0 && noBlockRow(i, j, k, board)) {
+                        // update target cell value to moving cell value
+                        moveAnimation(i, j, k, j); // show animation effect
+                        board[k][j] = board[i][j];
+                        board[i][j] = 0; // change moving cell value to 0;
+                    }
+                    // if target cell value equals to moving cell value and neighbored cells are 0
+                    else if (board[k][j] == board[i][j] && noBlockRow(i, j, k, board)){
+                        moveAnimation(i, j, k, j); // show animation effect
+                        // update target value to sum and change current moving cell to 0
+                        board[k][j] = board[k][j] + board[i][j];
+                        board[i][j] = 0;
+                    }
+                }
+            }
+        }
+    }
+    updateBoardView();
+    return true;
+}
+function moveDown() {
+    if (!canMoveDown(board)) {
+        return false;
+    }
+    // row
+    for (var i = 2; i >= 0; i--) {
+        // col
+        for (var j = 0; j < 4; j++) { // column starts from 1 because 0 is the most left 
+            if (board[i][j] != 0) { // current cell has value
+                // new row
+                for (var k = 3; k > i; k--) { 
+                    // if target cell is 0 and neighbored cells are 0 too
+                    if (board[k][j] == 0 && noBlockRow(i, j, k, board)) {
+                        // update target cell value to moving cell value
+                        moveAnimation(i, j, k, j); // show animation effect
+                        board[k][j] = board[i][j];
+                        board[i][j] = 0; // change moving cell value to 0;
+                    }
+                    // if target cell value equals to moving cell value and neighbored cells are 0
+                    else if (board[k][j] == board[i][j] && noBlockRow(i, j, k, board)){
+                        moveAnimation(i, j, k, j); // show animation effect
+                        // update target value to sum and change current moving cell to 0
+                        board[k][j] = board[k][j] + board[i][j];
+                        board[i][j] = 0;
+                    }
+                }
+            }
+        }
+    }
+    updateBoardView();
+    return true;
+}
+function moveAnimation(fromX, fromY, toX, toY) {
+        numberCell = $("#number-cell-" + fromX + "-" + fromY);
+        numberCell.animate({
+            top: getPosLeft(toX, toY),
+            left: getPosLeft(toX, toY)
+        }, 200);
+}
+// check if cols and rows are blocked
+function noBlockCol(row, col1, col2, board) {
+    for (var i = col1 + 1; i < col2; i++) {
+        if (board[row][i] != 0) {
+            return false;
+        }
+    }
+    return true;
+}
+function noBlockRow(row1, col, row2, board) {
+    for (var i = row1 + 1; i < row2; i++) {
+        if (board[i][col] != 0) {
+            return false;
+        }
+    }
+    return true;
+}
+// check if is movable: can only move when neighboured cell are zero or neighbored cells have the same value
+function canMoveLeft(board) {
+    for (var i = 0; i < 4; i++) {
+        for (var j = 1; j < 4; j++) {
+            if (board[i][j] != 0) {
+                if (board[i][j - 1] == 0 || board[i][j - 1] == board[i][j]) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+function canMoveRight(board) {
+    for (var i = 0; i < 4; i++) {
+        for (var j = 2; j > i; j--) {
+            if (board[i][j] != 0) {
+                if (board[i][j + 1] == 0 || board[i][j + 1] == board[i][j]) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+function canMoveUp(board) {
+    for (var i = 1; i < 4; i++) {
+        for (var j = 0; j < 4; j++) {
+            if (board[i][j] != 0) {
+                if (board[i - 1][j] == 0 || board[i - 1][j] == board[i][j]) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+function canMoveDown(board) {
+    for (var i = 2; i >= 0; i--) {
+        for (var j = 1; j < 4; j++) {
+            if (board[i][j] != 0) {
+                if (board[i + 1][j] == 0 || board[ + 1][j] == board[i][j]) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
 /** 
  * ==============
  *  HELPER FUNCTION
