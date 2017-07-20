@@ -58,6 +58,16 @@ function updateBoardView() {
     $(".number-cell").css("font-size", "60px");
 }
 
+/**
+ *  SCORE
+ * 
+ *  score updates only when numbers added up
+ */
+var score = 0;
+function showScore(score) {
+    $("#score").text(score);
+}
+
 /** 
  * ==============
  *  NUMBERS
@@ -167,6 +177,9 @@ function moveLeft() {
                         // update target value to sum and change current moving cell to 0
                         board[i][k] = board[i][k] + board[i][j];
                         board[i][j] = 0;
+                        // score update
+                        score += board[i][k];
+                        showScore(score);
                     }
                 }
             }
@@ -199,6 +212,9 @@ function moveRight() {
                         // update target value to sum and change current moving cell to 0
                         board[i][k] = board[i][k] + board[i][j];
                         board[i][j] = 0;
+                        // score update
+                        score += board[i][k];
+                        showScore(score);
                     }
                 }
             }
@@ -231,6 +247,9 @@ function moveUp() {
                         // update target value to sum and change current moving cell to 0
                         board[k][j] = board[k][j] + board[i][j];
                         board[i][j] = 0;
+                        // score update
+                        score += board[k][j];
+                        showScore(score);
                     }
                 }
             }
@@ -263,6 +282,9 @@ function moveDown() {
                         // update target value to sum and change current moving cell to 0
                         board[k][j] = board[k][j] + board[i][j];
                         board[i][j] = 0;
+                        // score update
+                        score += board[k][j];
+                        showScore(score);
                     }
                 }
             }
@@ -344,6 +366,12 @@ function canMoveDown(board) {
     }
     return false;
 }
+
+/**
+ *  GAME OVER
+ */
+
+
 /** 
  * ==============
  *  HELPER FUNCTION
