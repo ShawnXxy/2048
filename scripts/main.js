@@ -419,8 +419,8 @@ function isOver() {
     if (noSpace(board) && noMove(board)) {
         $("#grid-container").append("<div id='gameover' class='gameover'><p>Score</p><span>" + score + "</span><button onclick='newgame()' id='newgamebutton'>Restart</button></div>");
         var gameOver = $("#gameover");
-        gameOver.css("width", "500px");
-        gameOver.css("height", "500px");
+        gameOver.css("width", "460px");
+        gameOver.css("height", "460px");
         gameOver.css("background-color", "rgba(0, 0, 0, 0.5)");
     }
 }
