@@ -417,7 +417,7 @@ function canMoveDown(board) {
  */
 function isOver() {
     if (noSpace(board) && noMove(board)) {
-        $("#grid-container").append("<div id='gameover' class='gameover'><p>Score</p><span>" + score + "</span><button onclick='newgame()' id='newgamebutton'>Restart</button></div>");
+        $("#grid-container").append("<div id='gameover' class='gameover'><p>Score</p><span>" + score + "</span><button onclick='restart()' id='newgamebutton'>Restart</button></div>");
         var gameOver = $("#gameover");
         gameOver.css("width", "460px");
         gameOver.css("height", "460px");
@@ -439,6 +439,9 @@ function noMove() {
         return false;
     }
     return true;
+}
+function restart() {
+    window.location = ""; // reload window
 }
 
 /** 
