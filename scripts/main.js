@@ -20,7 +20,12 @@ var hasConflicted = new Array();
 var score;
 function init() {
     for (var i = 0; i < 4; i++) { // for rows
+        board[i] = new Array();
+        hasConflicted[i] = new Array();
         for (var j = 0; j < 4; j++) { // for columns
+            board[i][j] = 0; // initializing each cell to 0
+            hasConflicted[i][j] = false;
+
             var gridCell = $("#grid-cell-" + i + "-" + j);
             // set margin-top for each cell
             gridCell.css("top", getPosTop(i, j));
@@ -28,27 +33,26 @@ function init() {
             gridCell.css("left", getPosLeft(i, j));
         }
     }
-    for (var i = 0; i < 4; i++) { // for rows
-        board[i] = new Array();
-        hasConflicted[i] = new Array();
-        for (var j = 0; j < 4; j++) { // for columns
-            board[i][j] = 0; // initializing each cell to 0
-            hasConflicted[i][j] = false;
-        }
-    }
+    // for (var i = 0; i < 4; i++) { // for rows
+    //     board[i] = new Array();
+    //     hasConflicted[i] = new Array();
+    //     for (var j = 0; j < 4; j++) { // for columns
+    //         board[i][j] = 0; // initializing each cell to 0
+    //         hasConflicted[i][j] = false;
+    //     }
+    // }
     updateBoardView();
     // reset score
     score = 0;
-    $("#score").text(score);
+    showScore(score);
 }
 // game cell
-var numberCell;
 function updateBoardView() {
     $(".number-cell").remove(); // clear previous format
     for (var i = 0; i < 4; i++) {
         for (var j = 0; j < 4; j++) {
             $("#grid-container").append("<div class='number-cell' id='number-cell-" + i + "-" + j +"'></div>");
-            numberCell = $("#number-cell-" + i + "-" + j); 
+            var numberCell = $("#number-cell-" + i + "-" + j); 
             if (board[i][j] == 0) { // if cell value is zero, set width, height to zero so that not to display
                 numberCell.css("width", "0px");
                 numberCell.css("height", "0px");
@@ -92,14 +96,14 @@ function generateOneNumber() {
         return false;
     }
     // 1, generate random cell
-    var randomx = parseInt(Math.floor(Math.random() * 4));
-    var randomy = parseInt(Math.floor(Math.random() * 4));
+    var randomX = parseInt(Math.floor(Math.random() * 4));
+    var randomY = parseInt(Math.floor(Math.random() * 4));
     while (true) {
-        if (board[randomx][randomy] == 0) {
+        if (board[randomX][randomY] == 0) {
             break;
         }
-        randomx = parseInt(Math.floor(Math.random() * 4));
-        randomx = parseInt(Math.floor(Math.random() * 4));
+        randomX = parseInt(Math.floor(Math.random() * 4));
+        randomY = parseInt(Math.floor(Math.random() * 4));
     }
     // 2, generate random number (number should be 2 or 4)
     if (Math.random() < 0.5) {
@@ -108,13 +112,13 @@ function generateOneNumber() {
         randomNum = 4;
     }
     // 3, display random number at random cell
-    board[randomx][randomy] = randomNum;
-    showNumber(randomx, randomy, randomNum);
+    board[randomX][randomY] = randomNum;
+    showNumber(randomX, randomY, randomNum);
 
     return true;
 }
-function showNumber(i, j, num) {
-    numberCell = $("#number-cell-" + i + "-" + j); 
+function showNumber(i, j, randomNum) {
+    var numberCell = $("#number-cell-" + i + "-" + j); 
     numberCell.css("background-color", getNumberBackgroundColor(randomNum));
     numberCell.css("color", getNumberColor(randomNum));
     numberCell.text(randomNum);
@@ -138,8 +142,8 @@ function showNumber(i, j, num) {
  *          change target cell's value to sum(cur, target) and change current value to 0
  */
 // when a key is pressed
-$(document).keydown(function(e) {
-    switch (e.keyCode) {
+$(document).keydown(function(event) {
+    switch (event.keyCode) {
         // left
         case 37: 
             if (moveLeft()) {
@@ -333,7 +337,7 @@ function moveDown() {
     return true;
 }
 function moveAnimation(fromX, fromY, toX, toY) {
-        numberCell = $("#number-cell-" + fromX + "-" + fromY);
+        var numberCell = $("#number-cell-" + fromX + "-" + fromY);
         numberCell.animate({
             top: getPosLeft(toX, toY),
             left: getPosLeft(toX, toY)
